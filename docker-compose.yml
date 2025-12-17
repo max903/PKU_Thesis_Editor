@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Frontend (Next.js)
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: ../../infrastructure/docker/Dockerfile.web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
+  # Backend (NestJS)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: ../../infrastructure/docker/Dockerfile.api
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/thesis
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - redis
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=thesis
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
