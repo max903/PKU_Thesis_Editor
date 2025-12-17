@@ -1,0 +1,191 @@
+# Project Spec: Web-Based Thesis Editor Platform (PKU Thesis Compliant)
+
+> **Goal:** Build an open-source, scalable, and monetizable web-based thesis writing platform for Chinese (initially PKU) students, enforcing strict formatting rules while remaining user-friendly and extensible via plugins and AI-assisted configuration.
+
+---
+
+## 0. Vision & High-Level Requirements
+
+### 0.1 Product Vision
+
+Create a **web-based thesis editor** that:
+
+- Helps students write theses **100% compliant** with university formatting standards (starting with PKU).
+- Provides a **guided, structured editor** instead of a free-form word processor.
+- Integrates with **AI assistants** to:
+  - Explain formatting rules.
+  - Propose changes to rules or templates.
+  - Generate content in a controlled way.
+- Uses a **plugin architecture** so new universities, templates, and features can be added incrementally.
+- Includes:
+  - User accounts (Aliyun-based infrastructure).
+  - Payment and subscription system (targeting China, supporting WeChat Pay).
+  - Internationalization (at least `zh-CN` and `en`).
+
+The system should be built as an **open-source project** with a **cloud-native, horizontally scalable** architecture, and a clear path to monetization (freemium + paid features).
+
+---
+
+## 1. Architecture Overview
+
+### 1.1 Suggested Tech Stack (Opinionated, but Replaceable)
+
+- **Frontend**
+  - Framework: `React` or `Next.js` (SSR/SSG ready).
+  - Editor: `CKEditor 5` (DecoupledDocumentEditor, custom build).
+  - UI: `Tailwind CSS` or `Ant Design` (for faster Chinese-market-ready UI).
+  - State mgmt: `Redux Toolkit` or `Zustand`, plus React Query for server state.
+
+- **Backend**
+  - Language/Framework: `Node.js` with `NestJS` (or Express + TypeScript), or `Spring Boot` if Java is preferred.
+  - API: REST or GraphQL (REST is simpler to start).
+  - Persistence:
+    - Relational DB: `PostgreSQL` or `MySQL` (Aliyun RDS).
+    - Cache/session: `Redis` (Aliyun Redis).
+  - Object storage: `Aliyun OSS` for documents, exports, logs.
+  - Authentication: Custom auth backed by DB + JWT; optional integration with Aliyun IDaaS later.
+  - Message queue (for async jobs): `Aliyun MNS` or `RocketMQ`.
+
+- **Infrastructure**
+  - Cloud: `Aliyun` (Alibaba Cloud).
+  - Containerization: `Docker`.
+  - Orchestration: `Kubernetes` (ACK ¡V Alibaba Cloud Container Service).
+  - CI/CD: GitHub Actions / GitLab CI ¡÷ Aliyun deployment.
+  - Observability: Log Service (SLS), Application Real-Time Monitoring Service (ARMS) or Prometheus + Grafana.
+
+- **Payments**
+  - WeChat Pay web integration (Native / JSAPI / QR code), through official APIs or a third-party SDK.
+
+- **AI Integration**
+  - Abstracted via an internal service (e.g. `/api/ai/¡K`) so underlying LLM provider can be swapped.
+
+---
+
+## 2. Core Domain Model
+
+### 2.1 Entities
+
+- **User**
+  - `id`
+  - `email` / `phone`
+  - `password_hash`
+  - `role` (`student`, `admin`, `partner_university`)
+  - `plan` (`free`, `pro`, `institutional`)
+  - `created_at`, `updated_at`
+
+- **ThesisProject**
+  - `id`
+  - `user_id`
+  - `title`
+  - `university_id` (e.g., PKU)
+  - `template_id` (specific formatting rules)
+  - `status` (`draft`, `ready_for_review`, `locked_for_submission`)
+  - `created_at`, `updated_at`
+
+- **Section**
+  - `id`
+  - `thesis_id`
+  - `type` (enum: `cover`, `copyright`, `abstract_cn`,
+    `abstract_en`, `toc`, `chapter`, `references`,
+    `appendix`, `acknowledgements`, `declaration`, etc.)
+  - `order_index`
+  - `data` (structured JSON; e.g., chapter name, numbering)
+  - `content` (rich-text stored as JSON/HTML, but with schema validation)
+
+- **Template**
+  - `id`
+  - `university_id`
+  - `name`
+  - `version`
+  - `rules` (JSON describing formatting rules; see below)
+  - `created_at`, `updated_at`
+
+- **TemplateRule** (embedded in `Template.rules`)
+  - Heading hierarchy rules, fonts, margins, line spacing, page-numbering style, abstract length constraints, etc.
+  - Machine-readable, AI-readable, and can be edited via AI proposals.
+
+- **Plugin**
+  - `id`
+  - `name`
+  - `key` (unique identifier)
+  - `version`
+  - `enabled`
+  - `config_schema` (JSON Schema)
+  - `ui_integration_points` (where it hooks into the UI; e.g., toolbar, sidebar, context menu)
+  - `backend_hooks` (webhooks/events the plugin listens to)
+  - Actual code: stored in git repo / object storage; dynamically loaded on frontend and backend.
+
+- **Subscription / Order / Payment**
+  - `Subscription`: per user or institution
+  - `Order`: record of purchase
+  - `Payment`: WeChat transaction details (out_trade_no, transaction_id, etc.)
+
+---
+
+## 3. Phased Development Plan
+
+The project will be built in **three major phases**, with each phase producing working software.
+
+---
+
+## Phase 1 ¡V Concept Prototype (Webpage + Plugin-Friendly Framework + AI Discussion)
+
+### 3.1 Objectives
+
+- Deliver a **single-page web prototype** that:
+  - Demonstrates a **thesis editor UI**.
+  - Has a **fixed PKU template** baked in (hard-coded rules to start).
+  - Showcases how **AI can discuss and refine requirements**.
+  - Implements a **basic plugin system** skeleton to support future modular features.
+- No real auth or payments yet (can be mocked).
+- Architecture and code must be **designed for extension** (plugins, AI-driven rule updates).
+
+### 3.2 Features
+
+#### 3.2.1 Thesis Editor Prototype
+
+- Main view:
+  - Left: Thesis outline (fixed sections: cover, abstract CN, abstract EN, TOC, chapters, references, etc.).
+  - Center: Rich-text editor (CKEditor 5 decoupled).
+  - Right: ¡§Compliance Panel¡¨ showing:
+    - Which rules are satisfied.
+    - Warnings (e.g., ¡§Abstract length too long¡¨, ¡§Heading level 4 not allowed¡¨).
+- Preset PKU-like rules (approximate for prototype):
+  - Fixed set of sections in fixed order.
+  - Headings limited to levels 1¡V3.
+  - Enforce fonts/styles on the editor side as much as possible.
+
+#### 3.2.2 AI Conversation Panel
+
+- Right-side or bottom panel:
+  - User can chat with AI:
+    - Ask about thesis formatting.
+    - Ask to change certain formatting rules (e.g., ¡§Make headings 1.5x larger¡¨).
+    - Ask to create or configure plugins (¡§Add a plugin to auto-check figure captions¡¨).
+  - AI returns:
+    - Explainable text.
+    - Is this custome format changes fulfill with the university formatting standards.
+    - A proposed **JSON diff** of template rules or plugin configuration.
+  - User can **inspect and approve** changes before they are applied.
+
+#### 3.2.3 Plugin Architecture (MVP)
+
+- **Plugin definition** (frontend):
+  - A plugin is a self-contained module that can:
+    - Add buttons to the toolbar.
+    - Add panels in the sidebar.
+    - Subscribe to editor events (onChange, onSave, onValidate).
+  - Example plugin: ¡§Word Count & Abstract Length Checker¡¨:
+    - Hooks into onChange.
+    - Computes counts for the abstract section.
+    - Updates the Compliance Panel.
+
+- **Plugin lifecycle**:
+  - Discover available plugins from backend: `GET /api/plugins`.
+  - Load plugins dynamically using:
+    - Dynamic `import()` (for JS modules), or
+    - Plugin bundle URLs defined in backend.
+  - Initialization:
+    - Pass `editorInstance`, `pluginConfig`, `apiClient` to plugin.
+  - Plugins limited in capability for security (no arbitrary network calls except via provided APIs).
+
