@@ -1,0 +1,257 @@
+{
+  "$schema": "./rules.schema.json",
+  "id": "pku-graduate-thesis",
+  "name": "北京大学研究生学位论文",
+  "version": "2014.05",
+  "university": {
+    "id": "pku",
+    "name": "北京大学",
+    "name_en": "Peking University"
+  },
+  "pageSetup": {
+    "paperSize": {
+      "width": "21.0cm",
+      "height": "29.7cm",
+      "name": "A4"
+    },
+    "margins": {
+      "top": "3.0cm",
+      "bottom": "2.5cm",
+      "left": "2.6cm",
+      "right": "2.6cm",
+      "gutter": "0cm",
+      "gutterPosition": "left"
+    },
+    "header": {
+      "distance": "2.0cm"
+    },
+    "footer": {
+      "distance": "1.75cm"
+    }
+  },
+  "fonts": {
+    "chinese": {
+      "default": "宋体",
+      "heading": "黑体",
+      "cover": "仿宋"
+    },
+    "english": {
+      "default": "Times New Roman",
+      "heading": "Arial"
+    }
+  },
+  "headings": {
+    "chapter": {
+      "format": "第{n}章 {title}",
+      "numbering": "chinese",
+      "font": "黑体",
+      "size": "16pt",
+      "sizeName": "三号",
+      "alignment": "center",
+      "lineSpacing": "single",
+      "spaceBefore": "24pt",
+      "spaceAfter": "18pt"
+    },
+    "section1": {
+      "format": "{chapter}.{n} {title}",
+      "numbering": "arabic",
+      "font": "黑体",
+      "size": "14pt",
+      "sizeName": "四号",
+      "alignment": "left",
+      "lineSpacing": "20pt",
+      "spaceBefore": "24pt",
+      "spaceAfter": "6pt"
+    },
+    "section2": {
+      "format": "{chapter}.{section1}.{n} {title}",
+      "numbering": "arabic",
+      "font": "黑体",
+      "size": "13pt",
+      "alignment": "left",
+      "lineSpacing": "20pt",
+      "spaceBefore": "12pt",
+      "spaceAfter": "6pt"
+    },
+    "section3": {
+      "format": "{chapter}.{section1}.{section2}.{n} {title}",
+      "numbering": "arabic",
+      "font": "黑体",
+      "size": "12pt",
+      "sizeName": "小四",
+      "alignment": "left",
+      "lineSpacing": "20pt",
+      "spaceBefore": "12pt",
+      "spaceAfter": "6pt",
+      "note": "不建议使用三级及以上节标题"
+    }
+  },
+  "paragraph": {
+    "font": "宋体",
+    "fontEnglish": "Times New Roman",
+    "size": "12pt",
+    "sizeName": "小四",
+    "lineSpacing": "20pt",
+    "lineSpacingType": "fixed",
+    "firstLineIndent": "2em",
+    "alignment": "justify",
+    "spaceBefore": "0pt",
+    "spaceAfter": "0pt"
+  },
+  "abstract": {
+    "chinese": {
+      "title": "摘要",
+      "titleFont": "黑体",
+      "titleSize": "16pt",
+      "titleAlignment": "center",
+      "titleSpaceBefore": "24pt",
+      "titleSpaceAfter": "18pt",
+      "contentFont": "宋体",
+      "contentSize": "12pt",
+      "contentLineSpacing": "20pt",
+      "minLength": {
+        "master": 600,
+        "doctor": 800
+      },
+      "maxLength": {
+        "master": 600,
+        "doctor": 1000
+      },
+      "keywords": {
+        "count": { "min": 3, "max": 5 },
+        "separator": "，"
+      }
+    },
+    "english": {
+      "titleFont": "Arial",
+      "titleSize": "16pt",
+      "titleLabel": "ABSTRACT",
+      "contentFont": "Times New Roman",
+      "contentSize": "12pt",
+      "keywords": {
+        "label": "KEY WORDS",
+        "separator": ", ",
+        "capitalization": "first-letter"
+      }
+    }
+  },
+  "tableOfContents": {
+    "maxLevel": 3,
+    "chapterFont": "黑体",
+    "chapterSize": "12pt",
+    "otherFont": "宋体",
+    "otherSize": "12pt",
+    "lineSpacing": "20pt",
+    "chapterSpaceBefore": "6pt",
+    "indentPerLevel": "1em"
+  },
+  "figures": {
+    "numbering": "{chapter}.{n}",
+    "captionPosition": "below",
+    "captionFont": "宋体",
+    "captionSize": "11pt",
+    "captionAlignment": "center",
+    "captionSpaceBefore": "6pt",
+    "captionSpaceAfter": "12pt",
+    "labelFormat": "图 {number} {caption}"
+  },
+  "tables": {
+    "numbering": "{chapter}.{n}",
+    "captionPosition": "above",
+    "captionFont": "宋体",
+    "captionSize": "11pt",
+    "captionAlignment": "center",
+    "captionSpaceBefore": "12pt",
+    "captionSpaceAfter": "6pt",
+    "labelFormat": "表 {number} {caption}",
+    "cellFont": "宋体",
+    "cellSize": "11pt",
+    "cellLineSpacing": "single",
+    "cellSpaceBefore": "3pt",
+    "cellSpaceAfter": "3pt"
+  },
+  "equations": {
+    "numbering": "({chapter}.{n})",
+    "alignment": "center",
+    "numberPosition": "right",
+    "lineSpacing": "single",
+    "spaceBefore": "6pt",
+    "spaceAfter": "6pt"
+  },
+  "references": {
+    "title": "参考文献",
+    "titleFormat": "chapter",
+    "font": "宋体",
+    "fontEnglish": "Times New Roman",
+    "size": "10.5pt",
+    "sizeName": "五号",
+    "lineSpacing": "16pt",
+    "spaceBefore": "3pt",
+    "spaceAfter": "0pt",
+    "citationStyles": ["sequential", "author-year"],
+    "defaultStyle": "sequential"
+  },
+  "appendix": {
+    "numbering": "A, B, C...",
+    "titleFormat": "附录 {letter} {title}",
+    "figureNumbering": "{letter}.{n}",
+    "tableNumbering": "{letter}.{n}",
+    "equationNumbering": "({letter}-{n})"
+  },
+  "footnotes": {
+    "numbering": "①②③...",
+    "numberingScope": "page",
+    "font": "宋体",
+    "size": "9pt",
+    "sizeName": "小五",
+    "lineSpacing": "single"
+  },
+  "pageNumbering": {
+    "frontMatter": {
+      "style": "roman-upper",
+      "startAt": 1,
+      "position": "center-bottom",
+      "font": "Times New Roman",
+      "size": "10.5pt"
+    },
+    "mainMatter": {
+      "style": "arabic",
+      "startAt": 1,
+      "position": "center-bottom",
+      "font": "Times New Roman",
+      "size": "10.5pt"
+    }
+  },
+  "header": {
+    "font": "宋体",
+    "size": "10.5pt",
+    "sizeName": "五号",
+    "alignment": "center",
+    "oddPage": "{sectionTitle}",
+    "evenPage": "北京大学{degree}学位论文",
+    "borderBottom": {
+      "width": "0.75pt",
+      "style": "solid"
+    }
+  },
+  "cover": {
+    "title": {
+      "font": "黑体",
+      "size": "26pt",
+      "sizeName": "一号",
+      "alignment": "center",
+      "maxLength": 20,
+      "maxLines": 2
+    },
+    "info": {
+      "font": "仿宋",
+      "size": "16pt",
+      "sizeName": "三号"
+    },
+    "date": {
+      "font": "宋体",
+      "size": "16pt",
+      "format": "二〇{yy}年{m}月"
+    }
+  }
+}
